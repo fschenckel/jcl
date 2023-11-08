@@ -26,7 +26,7 @@ Getting involved in JCL development
 
 
 About this release
-JCL release 2.9 provides support for RAD Studio 11 (including Delphi and C++Builder) an updated support for all targets.
+JCL release 2.9 provides support for RAD Studio 12 (including Delphi and C++Builder) an updated support for all targets.
 
 Multiple bugs have been fixed; for detailed change logs, use the facilities of our Subversion repository at Sourceforge.net  http://sourceforge.net/projects/jcl/ , see below.
 
@@ -64,7 +64,7 @@ The JEDI Code Library packages are required by some 3rd party packages (includin
 
 The installer can generate MAP informations for each package. These informations can be linked into binaries to become JCL debug data or be converted to .jdbg files. Once linked MAP files could be deleted. These options are subnodes of the "Packages" node.
 
-For BDS 2006, RAD Studio 2007, 2009, 2010, XE, XE2, XE3, XE4, XE5, XE6, XE7, XE8, 10, 10.1, 10.2, 10.3, 10.4 and 11 the compiler introduced a new option to make the same packages available in C++, by checking the "Dual packages" option of the "Packages" node, you will be able to call functions of the JCL from C++ code.
+For BDS 2006, RAD Studio 2007, 2009, 2010, XE, XE2, XE3, XE4, XE5, XE6, XE7, XE8, 10, 10.1, 10.2, 10.3, 10.4, 11 and 12 the compiler introduced a new option to make the same packages available in C++, by checking the "Dual packages" option of the "Packages" node, you will be able to call functions of the JCL from C++ code.
 
 
 --------------------------------------------------------------------------------

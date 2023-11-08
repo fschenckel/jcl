@@ -88,8 +88,10 @@ function LockedSub(var Target: Int64; Value: Int64): Int64; overload;
 
 {$IFNDEF VER360}
 {$IFDEF BORLAND}
+{$IFNDEF COMPILER29_UP}
 function LockedDec(var Target: NativeInt): NativeInt; overload;
 function LockedInc(var Target: NativeInt): NativeInt; overload;
+{$ENDIF ~COMPILER29_UP}
 {$ENDIF BORLAND}
 {$ENDIF VER360}
 {$ENDIF CPU64}
@@ -736,6 +738,8 @@ end;
 {$IFNDEF VER360}
 {$IFDEF BORLAND}
 
+{$IFNDEF COMPILER29_UP}
+
 function LockedDec(var Target: NativeInt): NativeInt;
 asm
         // --> RCX Target
@@ -753,6 +757,8 @@ asm
         LOCK XADD [RCX], RAX
         INC     RAX
 end;
+
+{$ENDIF ~COMPILER29_UP}
 
 {$ENDIF BORLAND}
 {$ENDIF VER360}

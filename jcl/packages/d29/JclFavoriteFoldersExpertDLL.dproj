@@ -2,10 +2,10 @@
     <PropertyGroup>
         <ProjectGuid>{DCDB1939-E79B-4AF6-855E-78310CAF8467}</ProjectGuid>
         <MainSource>JclFavoriteFoldersExpertDLL.dpr</MainSource>
-        <ProjectVersion>19.1</ProjectVersion>
+        <ProjectVersion>20.0</ProjectVersion>
         <Config Condition="'$(Config)'==''">Release</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
-        <DCC_Define>BCB;WIN32;CONDITIONALEXPRESSIONS;VER360;RELEASE</DCC_Define>
+        <DCC_Define>BCB;WIN32;CONDITIONALEXPRESSIONS;RELEASE</DCC_Define>
         <Base>True</Base>
         <AppType>Package</AppType>
         <FrameworkType>None</FrameworkType>
@@ -56,7 +56,7 @@
         <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
         <DCC_Description>JCL Open and Save IDE dialogs with favorite folders</DCC_Description>
-        <DCC_Define>BCB;BCB;WIN32;CONDITIONALEXPRESSIONS;VER360;RELEASE;$(DCC_Define)</DCC_Define>
+        <DCC_Define>BCB;BCB;WIN32;CONDITIONALEXPRESSIONS;RELEASE;$(DCC_Define)</DCC_Define>
         <DCC_WriteableConstants>true</DCC_WriteableConstants>
         <DCC_OutputNeverBuildDcps>true</DCC_OutputNeverBuildDcps>
         <DllSuffix>290</DllSuffix>

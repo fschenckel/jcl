@@ -1459,7 +1459,6 @@ type
 
 procedure CMYKToBGR(const Source, Target: Pointer; const BitsPerSample: Byte; Count: Cardinal); overload;
 var
-//  R, G, B, K: Integer;
   R, G, B, K: Integer;
   I: Integer;
   SourcePtr: PCMYK;
@@ -1478,7 +1477,7 @@ begin
           R := 255 - (SourcePtr.C - MulDiv(SourcePtr.C, K, 255) + K);
           G := 255 - (SourcePtr.M - MulDiv(SourcePtr.M, K, 255) + K);
           B := 255 - (SourcePtr.Y - MulDiv(SourcePtr.Y, K, 255) + K);
-          TargetPtr^ := JclLogic.Max(Byte(0), JclLogic.Min(255, Byte(B)));
+          TargetPtr^ := JclLogic.Max(0, JclLogic.Min(255, Byte(B)));
           Inc(TargetPtr);
           TargetPtr^ := JclLogic.Max(0, JclLogic.Min(255, Byte(G)));
           Inc(TargetPtr);
