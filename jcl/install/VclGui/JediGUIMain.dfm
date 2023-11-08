@@ -14,13 +14,14 @@ object MainForm: TMainForm
   Font.Name = 'helvetica'
   Font.Pitch = fpVariable
   Font.Style = []
-  OldCreateOrder = False
   Position = poScreenCenter
   ShowHint = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  PixelsPerInch = 96
+  DesignSize = (
+    792
+    582)
   TextHeight = 14
   object StatusBevel: TBevel
     Left = 8
@@ -55,6 +56,9 @@ object MainForm: TMainForm
     BorderStyle = bsSingle
     Color = 9981440
     TabOrder = 3
+    DesignSize = (
+      788
+      45)
     object JediImage: TImage
       Left = 664
       Top = 5
@@ -363,7 +367,7 @@ object MainForm: TMainForm
     Left = 32
     Top = 416
     Bitmap = {
-      494C0101070009000C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010107000900010010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

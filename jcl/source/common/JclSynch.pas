@@ -86,10 +86,12 @@ function LockedExchangeSub(var Target: Int64; Value: Int64): Int64; overload;
 function LockedInc(var Target: Int64): Int64; overload;
 function LockedSub(var Target: Int64; Value: Int64): Int64; overload;
 
+{$IFNDEF VER360}
 {$IFDEF BORLAND}
 function LockedDec(var Target: NativeInt): NativeInt; overload;
 function LockedInc(var Target: NativeInt): NativeInt; overload;
 {$ENDIF BORLAND}
+{$ENDIF VER360}
 {$ENDIF CPU64}
 
 // TJclDispatcherObject
@@ -731,6 +733,7 @@ asm
         ADD     RAX, RDX
 end;
 
+{$IFNDEF VER360}
 {$IFDEF BORLAND}
 
 function LockedDec(var Target: NativeInt): NativeInt;
@@ -752,6 +755,7 @@ asm
 end;
 
 {$ENDIF BORLAND}
+{$ENDIF VER360}
 
 {$ENDIF CPU64}
 

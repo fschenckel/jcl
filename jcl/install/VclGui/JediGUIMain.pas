@@ -39,7 +39,7 @@ uses
   Windows, Messages, CommCtrl,
   SysUtils, Classes,
   Graphics, Forms, Controls, Dialogs, StdCtrls, ExtCtrls, Menus, Buttons, ComCtrls, ImgList,
-  JclWin32, JclIDEUtils, JclContainerIntf, JediInstall;
+  JclWin32, JclIDEUtils, JclContainerIntf, JediInstall, System.ImageList;
 
 const
   WM_AFTERSHOW = WM_USER + 10;

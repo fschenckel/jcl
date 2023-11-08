@@ -104,6 +104,7 @@ Delphi 10.2 and C++Builder 10.2.
 Delphi 10.3 and C++Builder 10.3.
 Delphi 10.4 and C++Builder 10.4.
 Delphi 11 and C++Builder 11.
+Delphi 12 and C++Builder 12.
 
 --------------------------------------------------------------------------------
 
@@ -174,6 +175,8 @@ For Delphi 10.4 and C++Builder 10.4 Win32: source\include\jcld27win32.inc
 For Delphi 10.4 and C++Builder 10.4 Win64: source\include\jcld27win64.inc 
 For Delphi 11 and C++Builder 11 Win32: source\include\jcld28win32.inc 
 For Delphi 11 and C++Builder 11 Win64: source\include\jcld28win64.inc 
+For Delphi 12 and C++Builder 12 Win32: source\include\jcld29win32.inc 
+For Delphi 12 and C++Builder 12 Win64: source\include\jcld29win64.inc 
 For FreePascal: source\include\jclfpc.inc 
 In the IDE, open and compile package Jcl.dpk (or Jcl.bpk for C++Builder) located in a subdirectory of the "packages" directory matching your version of the IDE. This package doesn't have to be installed since it doesn't provide any components. 
 If you want to install experts, open package JclBaseExpert.dpk and compile it, then you can install all the experts you want (packages are located in the same directory). 
