@@ -403,9 +403,9 @@ type
     function GetMake: IJclCommandLineTool;
     function GetDescription: string;
     function GetEditionAsText: string;
-    function GetIdeExeFileName: string;
+    function GetIdeExeFileName(x64: Boolean): string;
     function GetGlobals: TStrings;
-    function GetIdeExeBuildNumber: string;
+    function GetIdeExeBuildNumber(x64: Boolean): string;
     function GetIdePackages: TJclBorRADToolIdePackages;
     function GetIsTurboExplorer: Boolean;
     function GetLatestUpdatePack: Integer;
@@ -450,6 +450,7 @@ type
     function GetEnvironmentVariables: TStrings; virtual;
     function GetVclIncludeDir(APlatform: TJclBDSPlatform): string; virtual;
     function GetName: string; virtual;
+    function GetIDEUpdateNumber: Integer;
     procedure OutputString(const AText: string);
     function OutputFileDelete(const FileName: string): Boolean;
     procedure SetOutputCallback(const Value: TTextHandler); virtual;
@@ -474,6 +475,7 @@ type
     function GetCompilerSettingsFormat: TJclCompilerSettingsFormat;
     function GetSupportsNoConfig: Boolean;
     function GetSupportsPlatform: Boolean;
+    function GetSupportsLSIF: Boolean;
 
     procedure CheckPlatform(APlatform: TJclBDSPlatform);
     procedure CheckCBuilderPlatform(APlatform: TJclBDSPlatform);
@@ -561,8 +563,8 @@ type
     property EnvironmentVariables: TStrings read GetEnvironmentVariables;
     property IdePackages: TJclBorRADToolIdePackages read GetIdePackages;
     property IdeTools: TJclBorRADToolIdeTool read FIdeTools;
-    property IdeExeBuildNumber: string read GetIdeExeBuildNumber;
-    property IdeExeFileName: string read GetIdeExeFileName;
+    property IdeExeBuildNumber[x64: Boolean]: string read GetIdeExeBuildNumber;
+    property IdeExeFileName[x64: Boolean]: string read GetIdeExeFileName;
     property InstalledUpdatePack: Integer read FInstalledUpdatePack;
     property LatestUpdatePack: Integer read GetLatestUpdatePack;
     property LibrarySearchPath[APlatform: TJclBDSPlatform]: TJclBorRADToolPath read GetLibrarySearchPath {$IFDEF KEEP_DEPRECATED}write SetRawLibrarySearchPath{$ENDIF};
@@ -582,6 +584,7 @@ type
     property ConfigDataLocation: string read FConfigDataLocation;
     property Globals: TStrings read GetGlobals;
     property Name: string read GetName;
+    property IDEUpdateNumber: Integer read GetIDEUpdateNumber;
     property Palette: TJclBorRADToolPalette read GetPalette;
     property Repository: TJclBorRADToolRepository read GetRepository;
     property RootDir: string read FRootDir;
@@ -606,6 +609,7 @@ type
     property CompilerSettingsFormat: TJclCompilerSettingsFormat read GetCompilerSettingsFormat;
     property SupportsNoConfig: Boolean read GetSupportsNoConfig;
     property SupportsPlatform: Boolean read GetSupportsPlatform;
+    property SupportsLSIF: Boolean read GetSupportsLSIF;
     property IsDcc64: Boolean read GetIsDcc64;
   end;
 
@@ -792,6 +796,7 @@ type
     function GetBCBInstallationFromVersion(VersionNumber: Integer): TJclBorRADToolInstallation;
     function GetDelphiInstallationFromVersion(VersionNumber: Integer): TJclBorRADToolInstallation;
   protected
+    procedure AddInstallation(CreateClass: TJclBorRADToolInstallationClass; const VersionKeyName: string);
     procedure ReadInstallations;
   public
     constructor Create;
@@ -1633,7 +1638,7 @@ begin
     if FDisabledPackages32.IndexOfName(FKnownPackages32.Names[I]) <> -1 then
       FKnownPackages32.Objects[I] := Pointer(True);
 
-  if Installation.IDEVersionNumber >= 23 then
+  if FileExists(Installation.IdeExeFileName[True]) then
   begin
     ReadPackageList(GetKnownIDEPackagesKeyName(True), FKnownIDEPackages64);
     ReadPackageList(GetKnownPackagesKeyName(True), FKnownPackages64);
@@ -2139,7 +2144,7 @@ begin
     if RunningProcessesList(Processes) then
     begin
       for I := 0 to Processes.Count - 1 do
-        if AnsiSameText(IdeExeFileName, Processes[I]) then
+        if StrIsOneOf(Processes[I], [IdeExeFileName[False], IdeExeFileName[True]]) then
         begin
           Result := True;
           Break;
@@ -2542,14 +2547,14 @@ begin
   Result := FGlobals;
 end;
 
-function TJclBorRADToolInstallation.GetIdeExeFileName: string;
+function TJclBorRADToolInstallation.GetIdeExeFileName(x64: Boolean): string;
 begin
-  Result := Globals.Values['App'];
+  Result := Globals.Values[Iff(x64, 'App x64', 'App')];
 end;
 
-function TJclBorRADToolInstallation.GetIdeExeBuildNumber: string;
+function TJclBorRADToolInstallation.GetIdeExeBuildNumber(x64: Boolean): string;
 begin
-  Result := VersionFixedFileInfoString(IdeExeFileName, vfFull);
+  Result := VersionFixedFileInfoString(IdeExeFileName[x64], vfFull);
 end;
 
 function TJclBorRADToolInstallation.GetIdePackages: TJclBorRADToolIdePackages;
@@ -2632,6 +2637,14 @@ begin
   Result := Format('%s %d', [RADToolName, IDEVersionNumber]);
 end;
 
+function TJclBorRADToolInstallation.GetIDEUpdateNumber: Integer;
+var
+  MainProductUpdate: string;
+begin
+  MainProductUpdate := ConfigData.ReadString('InstalledUpdates', 'Main Product Update', '');
+  Result := StrToIntDef(StrAfter('Update', MainProductUpdate), 0);
+end;
+
 function TJclBorRADToolInstallation.GetObjFolderName(APlatform: TJclBDSPlatform): string;
 begin
   CheckPlatform(APlatform);
@@ -2709,6 +2722,11 @@ begin
   Result := (RadToolKind = brBorlandDevStudio) and (VersionNumber >= 9);
 end;
 
+function TJclBorRADToolInstallation.GetSupportsLSIF: Boolean;
+begin
+  Result := (IDEVersionNumber >= 37) and (IDEUpdateNumber >= 1); // Delphi 13.1+
+end;
+
 function TJclBorRADToolInstallation.GetUpdateNeeded: Boolean;
 begin
   Result := InstalledUpdatePack < LatestUpdatePack;
@@ -2716,7 +2734,8 @@ end;
 
 function TJclBorRADToolInstallation.GetValid: Boolean;
 begin
-  Result := (ConfigData.FileName <> '') and (RootDir <> '') and FileExists(IdeExeFileName);
+  Result := (ConfigData.FileName <> '') and (RootDir <> '') and
+            (FileExists(IdeExeFileName[False]) or FileExists(IdeExeFileName[True]));
 end;
 
 function TJclBorRADToolInstallation.GetVclIncludeDir(APlatform: TJclBDSPlatform): string;
@@ -4865,7 +4884,7 @@ begin
   if Assigned(BDSVersion) then
     Result := LoadResString(BDSVersion.Name)
   else
-    Result := LoadResString(@RsBDSName);
+    Result := LoadResString(@RsRSName);
 end;
 
 function TJclBDSInstallation.RadToolName: string;
@@ -5328,20 +5347,29 @@ begin
     Result := Result and TraverseMethod(Installations[I]);
 end;
 
+procedure TJclBorRADToolInstallations.AddInstallation(CreateClass: TJclBorRADToolInstallationClass; const VersionKeyName: string);
+var
+  Installation: TJclBorRADToolInstallation;
+begin
+  Installation := CreateClass.Create(VersionKeyName);
+  if Installation.Valid then
+    FList.Add(Installation)
+  else
+    Installation.Free;
+end;
+
 procedure TJclBorRADToolInstallations.ReadInstallations;
 var
   VersionNumbers: TStringList;
   PreviousRegWOW64AccessMode: TJclRegWOW64Access;
 
-  function EnumVersions(const KeyName: string; const Personalities: array of string;
-    CreateClass: TJclBorRADToolInstallationClass): Boolean;
+  procedure EnumVersions(const KeyName: string; const Personalities: array of string;
+    CreateClass: TJclBorRADToolInstallationClass);
   var
     I, J: Integer;
     VersionKeyName, PersonalitiesKeyName: string;
     PersonalitiesList: TStrings;
-    Installation: TJclBorRADToolInstallation;
   begin
-    Result := False;
     if RegKeyExists(HKEY_LOCAL_MACHINE, KeyName) and
       RegGetKeyNames(HKEY_LOCAL_MACHINE, KeyName, VersionNumbers) then
       for I := 0 to VersionNumbers.Count - 1 do
@@ -5352,13 +5380,7 @@ var
           begin
             if Length(Personalities) = 0 then
             begin
-              try
-                Installation := CreateClass.Create(VersionKeyName);
-                if Installation.Valid then
-                  FList.Add(Installation);
-              finally
-                Result := True;
-              end;
+              AddInstallation(CreateClass, VersionKeyName);
             end
             else
             begin
@@ -5371,15 +5393,7 @@ var
                 for J := Low(Personalities) to High(Personalities) do
                   if PersonalitiesList.IndexOf(Personalities[J]) >= 0 then
                   begin
-                    try
-                      Installation := CreateClass.Create(VersionKeyName);
-                      if Installation.Valid then
-                        FList.Add(Installation)
-                      else
-                        Installation.Free;
-                    finally
-                      Result := True;
-                    end;
+                    AddInstallation(CreateClass, VersionKeyName);
                     Break;
                   end;
               finally
